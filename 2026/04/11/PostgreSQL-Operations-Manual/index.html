@@ -1,0 +1,1703 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="PostgreSQL 运维手册目录 概述 Docker-Compose 部署 命名规范 运维规范 开发规范 常见问题处理 配置参考   一、概述1.1 前置要求 Docker 20.10+ Docker Compose 2.0+ 至少 1GB 可用内存  1.2 文档版本   版本 日期 说明    v1.0 2026-04-10 初始版本   v1.1 2026-04-10 增加慢查询记录配置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PostgreSQL 运维手册">
+<meta property="og:url" content="https://501947456.github.io/2026/04/11/PostgreSQL-Operations-Manual/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="PostgreSQL 运维手册目录 概述 Docker-Compose 部署 命名规范 运维规范 开发规范 常见问题处理 配置参考   一、概述1.1 前置要求 Docker 20.10+ Docker Compose 2.0+ 至少 1GB 可用内存  1.2 文档版本   版本 日期 说明    v1.0 2026-04-10 初始版本   v1.1 2026-04-10 增加慢查询记录配置">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-11T02:02:03.000Z">
+<meta property="article:modified_time" content="2026-04-11T08:12:26.242Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="postgresql">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>PostgreSQL 运维手册 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"501947456.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/about/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="PostgreSQL 运维手册"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-04-11 10:02" pubdate>
+          2026年4月11日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          19k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          161 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">PostgreSQL 运维手册</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="PostgreSQL-运维手册"><a href="#PostgreSQL-运维手册" class="headerlink" title="PostgreSQL 运维手册"></a>PostgreSQL 运维手册</h1><h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="#%E4%B8%80%E6%A6%82%E8%BF%B0">概述</a></li>
+<li><a href="#%E4%BA%8Cdocker-compose-%E9%83%A8%E7%BD%B2">Docker-Compose 部署</a></li>
+<li><a href="#%E4%B8%89%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83">命名规范</a></li>
+<li><a href="#%E5%9B%9B%E8%BF%90%E7%BB%B4%E8%A7%84%E8%8C%83">运维规范</a></li>
+<li><a href="#%E4%BA%94%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83">开发规范</a></li>
+<li><a href="#%E5%85%AD%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86">常见问题处理</a></li>
+<li><a href="#%E4%B8%83%E9%85%8D%E7%BD%AE%E5%8F%82%E8%80%83">配置参考</a></li>
+</ol>
+<hr>
+<h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><h3 id="1-1-前置要求"><a href="#1-1-前置要求" class="headerlink" title="1.1 前置要求"></a>1.1 前置要求</h3><ul>
+<li>Docker 20.10+</li>
+<li>Docker Compose 2.0+</li>
+<li>至少 1GB 可用内存</li>
+</ul>
+<h3 id="1-2-文档版本"><a href="#1-2-文档版本" class="headerlink" title="1.2 文档版本"></a>1.2 文档版本</h3><table>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v1.0</td>
+<td>2026-04-10</td>
+<td>初始版本</td>
+</tr>
+<tr>
+<td>v1.1</td>
+<td>2026-04-10</td>
+<td>增加慢查询记录配置</td>
+</tr>
+<tr>
+<td>v1.2</td>
+<td>2026-04-10</td>
+<td>增加配置管理与生效操作说明</td>
+</tr>
+<tr>
+<td>v1.3</td>
+<td>2026-04-10</td>
+<td>简化部署配置，移除不必要的配置文件映射</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="二、Docker-Compose-部署"><a href="#二、Docker-Compose-部署" class="headerlink" title="二、Docker-Compose 部署"></a>二、Docker-Compose 部署</h2><h3 id="2-1-快速部署"><a href="#2-1-快速部署" class="headerlink" title="2.1 快速部署"></a>2.1 快速部署</h3><h4 id="创建目录结构"><a href="#创建目录结构" class="headerlink" title="创建目录结构"></a>创建目录结构</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> -p postgres-data init-scripts<br></code></pre></td></tr></table></figure>
+
+<h4 id="创建-docker-compose-yml"><a href="#创建-docker-compose-yml" class="headerlink" title="创建 docker-compose.yml"></a>创建 docker-compose.yml</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">version:</span> <span class="hljs-string">&#x27;3.8&#x27;</span><br><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">postgres:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">postgres:16-alpine</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">postgres</span><br>    <span class="hljs-attr">restart:</span> <span class="hljs-string">unless-stopped</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-attr">POSTGRES_USER:</span> <span class="hljs-string">admin</span><br>      <span class="hljs-attr">POSTGRES_PASSWORD:</span> <span class="hljs-string">your_password_here</span><br>      <span class="hljs-attr">POSTGRES_DB:</span> <span class="hljs-string">mydb</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;5432:5432&quot;</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./postgres-data:/var/lib/postgresql/data</span><br>      <span class="hljs-comment">#/var/lib/postgresql/data/pg_hba.conf</span><br>      <span class="hljs-comment">#/var/lib/postgresql/data/postgresql.conf</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./init-scripts:/docker-entrypoint-initdb.d</span><br>    <span class="hljs-attr">healthcheck:</span><br>      <span class="hljs-attr">test:</span> [<span class="hljs-string">&quot;CMD-SHELL&quot;</span>, <span class="hljs-string">&quot;pg_isready -U admin -d mydb&quot;</span>]<br>      <span class="hljs-attr">interval:</span> <span class="hljs-string">10s</span><br>      <span class="hljs-attr">timeout:</span> <span class="hljs-string">5s</span><br>      <span class="hljs-attr">retries:</span> <span class="hljs-number">5</span><br>    <span class="hljs-attr">deploy:</span><br>      <span class="hljs-attr">resources:</span><br>        <span class="hljs-attr">limits:</span><br>          <span class="hljs-attr">memory:</span> <span class="hljs-string">4G</span><br>        <span class="hljs-attr">reservations:</span><br>          <span class="hljs-attr">memory:</span> <span class="hljs-string">1G</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker-compose up -d<br></code></pre></td></tr></table></figure>
+
+<h4 id="验证部署"><a href="#验证部署" class="headerlink" title="验证部署"></a>验证部署</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 查看容器状态</span><br>docker-compose ps<br><br><span class="hljs-comment"># 连接数据库</span><br>psql -h localhost -U admin -d mydb<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-2-环境变量说明"><a href="#2-2-环境变量说明" class="headerlink" title="2.2 环境变量说明"></a>2.2 环境变量说明</h3><table>
+<thead>
+<tr>
+<th>变量名</th>
+<th>说明</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>POSTGRES_USER</td>
+<td>数据库用户名</td>
+<td>postgres</td>
+</tr>
+<tr>
+<td>POSTGRES_PASSWORD</td>
+<td>数据库密码</td>
+<td>-</td>
+</tr>
+<tr>
+<td>POSTGRES_DB</td>
+<td>初始数据库名</td>
+<td>-</td>
+</tr>
+<tr>
+<td>POSTGRES_INITDB_ARGS</td>
+<td>初始化额外参数</td>
+<td>-</td>
+</tr>
+<tr>
+<td>PGDATA</td>
+<td>数据目录位置</td>
+<td>&#x2F;var&#x2F;lib&#x2F;postgresql&#x2F;data&#x2F;pgdata</td>
+</tr>
+</tbody></table>
+<h3 id="2-3-数据持久化"><a href="#2-3-数据持久化" class="headerlink" title="2.3 数据持久化"></a>2.3 数据持久化</h3><ul>
+<li><strong>数据卷</strong>：映射 <code>./postgres-data</code> 到容器数据目录（配置文件默认位于数据目录中）</li>
+<li><strong>初始化脚本</strong>：<code>.sql</code> 或 <code>.sh</code> 脚本放入 <code>./init-scripts</code>，首次启动自动执行</li>
+</ul>
+<h3 id="2-4-常见操作"><a href="#2-4-常见操作" class="headerlink" title="2.4 常见操作"></a>2.4 常见操作</h3><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>连接数据库</td>
+<td><code>docker exec -it postgres psql -U admin -d mydb</code></td>
+</tr>
+<tr>
+<td>备份数据</td>
+<td><code>docker exec postgres pg_dump -U admin mydb &gt; backup.sql</code></td>
+</tr>
+<tr>
+<td>恢复数据</td>
+<td><code>cat backup.sql | docker exec -i postgres psql -U admin mydb</code></td>
+</tr>
+<tr>
+<td>停止服务</td>
+<td><code>docker-compose down</code></td>
+</tr>
+<tr>
+<td>完全清除</td>
+<td><code>docker-compose down -v</code></td>
+</tr>
+<tr>
+<td>查看日志</td>
+<td><code>docker-compose logs -f postgres</code></td>
+</tr>
+<tr>
+<td>重启服务</td>
+<td><code>docker-compose restart postgres</code></td>
+</tr>
+</tbody></table>
+<h3 id="2-5-生产环境建议"><a href="#2-5-生产环境建议" class="headerlink" title="2.5 生产环境建议"></a>2.5 生产环境建议</h3><ul>
+<li>使用强密码并通过环境变量或密文管理</li>
+<li>配置定期备份策略（见 4.2 节）</li>
+<li>限制容器资源使用（memory, cpu）</li>
+<li>配置适当的健康检查</li>
+<li>开启 SSL 连接</li>
+<li>配置文件位于数据目录中，可通过数据卷持久化</li>
+</ul>
+<hr>
+<h2 id="三、命名规范"><a href="#三、命名规范" class="headerlink" title="三、命名规范"></a>三、命名规范</h2><h3 id="3-1-数据库对象命名"><a href="#3-1-数据库对象命名" class="headerlink" title="3.1 数据库对象命名"></a>3.1 数据库对象命名</h3><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>规范</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据库</td>
+<td>snake_case</td>
+<td><code>order_management</code></td>
+</tr>
+<tr>
+<td>表</td>
+<td>snake_case，复数或业务前缀</td>
+<td><code>users</code>, <code>sys_orders</code></td>
+</tr>
+<tr>
+<td>列</td>
+<td>snake_case</td>
+<td><code>user_name</code>, <code>created_at</code></td>
+</tr>
+<tr>
+<td>索引</td>
+<td><code>idx_表名_列名</code></td>
+<td><code>idx_orders_user_id</code></td>
+</tr>
+<tr>
+<td>约束</td>
+<td><code>chk_表名_描述</code>，<code>uq_表名_列名</code></td>
+<td><code>chk_users_age</code>, <code>uq_users_email</code></td>
+</tr>
+<tr>
+<td>序列</td>
+<td><code>seq_表名_列名</code></td>
+<td><code>seq_users_id</code></td>
+</tr>
+<tr>
+<td>视图</td>
+<td><code>v_业务描述</code> 或 <code>vw_表名</code></td>
+<td><code>v_active_users</code></td>
+</tr>
+<tr>
+<td>函数</td>
+<td><code>fn_功能描述</code></td>
+<td><code>fn_calculate_total</code></td>
+</tr>
+<tr>
+<td>触发器</td>
+<td><code>trg_表名_动作</code></td>
+<td><code>trg_orders_after_insert</code></td>
+</tr>
+</tbody></table>
+<h3 id="3-2-SQL-编码规范"><a href="#3-2-SQL-编码规范" class="headerlink" title="3.2 SQL 编码规范"></a>3.2 SQL 编码规范</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- ✓ 推荐：关键字大写，逗号前置</span><br><span class="hljs-keyword">SELECT</span><br>    id,<br>    user_name,<br>    created_at<br><span class="hljs-keyword">FROM</span> users<br><span class="hljs-keyword">WHERE</span> status <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;active&#x27;</span><br>  <span class="hljs-keyword">AND</span> deleted_at <span class="hljs-keyword">IS</span> <span class="hljs-keyword">NULL</span>;<br><br><span class="hljs-comment">-- ✗ 避免：关键字混用，逗号后置</span><br><span class="hljs-keyword">select</span> id, user_name, created_at <span class="hljs-keyword">from</span> users <span class="hljs-keyword">where</span> status <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;active&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-3-命名注意事项"><a href="#3-3-命名注意事项" class="headerlink" title="3.3 命名注意事项"></a>3.3 命名注意事项</h3><ul>
+<li>避免使用保留字作为对象名</li>
+<li>表名和列名使用单数形式，视图可使用复数</li>
+<li>布尔字段使用 <code>is_</code> 或 <code>has_</code> 前缀</li>
+<li>时间字段使用 <code>_at</code> 后缀</li>
+<li>外键字段使用 <code>_id</code> 后缀</li>
+</ul>
+<hr>
+<h2 id="四、运维规范"><a href="#四、运维规范" class="headerlink" title="四、运维规范"></a>四、运维规范</h2><h3 id="4-1-日常维护"><a href="#4-1-日常维护" class="headerlink" title="4.1 日常维护"></a>4.1 日常维护</h3><h4 id="定期维护任务"><a href="#定期维护任务" class="headerlink" title="定期维护任务"></a>定期维护任务</h4><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>频率</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VACUUM</td>
+<td>每日&#x2F;周</td>
+<td>清理Dead Tuples</td>
+</tr>
+<tr>
+<td>ANALYZE</td>
+<td>每日&#x2F;周</td>
+<td>更新统计信息</td>
+</tr>
+<tr>
+<td>索引重建</td>
+<td>周&#x2F;月</td>
+<td>REINDEX 重建膨胀索引</td>
+</tr>
+<tr>
+<td>日志清理</td>
+<td>每日</td>
+<td>清理历史日志</td>
+</tr>
+<tr>
+<td>全量备份</td>
+<td>每日</td>
+<td>pg_dump 全量备份</td>
+</tr>
+<tr>
+<td>增量备份</td>
+<td>每小时</td>
+<td>WAL 归档</td>
+</tr>
+</tbody></table>
+<h4 id="自动清理配置"><a href="#自动清理配置" class="headerlink" title="自动清理配置"></a>自动清理配置</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 在 postgresql.conf 中配置</span><br>autovacuum <span class="hljs-operator">=</span> <span class="hljs-keyword">on</span><br>autovacuum_max_workers <span class="hljs-operator">=</span> <span class="hljs-number">3</span><br>autovacuum_naptime <span class="hljs-operator">=</span> <span class="hljs-number">1</span>min<br>autovacuum_vacuum_threshold <span class="hljs-operator">=</span> <span class="hljs-number">50</span><br>autovacuum_analyze_threshold <span class="hljs-operator">=</span> <span class="hljs-number">50</span><br>autovacuum_vacuum_scale_factor <span class="hljs-operator">=</span> <span class="hljs-number">0.1</span><br>autovacuum_analyze_scale_factor <span class="hljs-operator">=</span> <span class="hljs-number">0.05</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="监控指标"><a href="#监控指标" class="headerlink" title="监控指标"></a>监控指标</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 检查连接数</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>), state<br><span class="hljs-keyword">FROM</span> pg_stat_activity<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> state;<br><br><span class="hljs-comment">-- 检查长事务</span><br><span class="hljs-keyword">SELECT</span> pid, usename, state, query_start, query<br><span class="hljs-keyword">FROM</span> pg_stat_activity<br><span class="hljs-keyword">WHERE</span> state <span class="hljs-operator">!=</span> <span class="hljs-string">&#x27;idle&#x27;</span><br><span class="hljs-keyword">AND</span> query_start <span class="hljs-operator">&lt;</span> NOW() <span class="hljs-operator">-</span> <span class="hljs-type">INTERVAL</span> <span class="hljs-string">&#x27;10 minutes&#x27;</span>;<br><br><span class="hljs-comment">-- 检查表膨胀</span><br><span class="hljs-keyword">SELECT</span> relname, n_dead_tup, n_live_tup, last_vacuum, last_autovacuum<br><span class="hljs-keyword">FROM</span> pg_stat_user_tables<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> n_dead_tup <span class="hljs-keyword">DESC</span>;<br><br><span class="hljs-comment">-- 检查索引使用率</span><br><span class="hljs-keyword">SELECT</span> indexrelname, idx_scan, idx_tup_read, idx_tup_fetch<br><span class="hljs-keyword">FROM</span> pg_stat_user_indexes<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> idx_scan <span class="hljs-keyword">ASC</span>;<br><br><span class="hljs-comment">-- 检查缓存命中率</span><br><span class="hljs-keyword">SELECT</span><br>    <span class="hljs-built_in">sum</span>(blks_hit) <span class="hljs-operator">*</span> <span class="hljs-number">100.0</span> <span class="hljs-operator">/</span> <span class="hljs-built_in">nullif</span>(<span class="hljs-built_in">sum</span>(blks_hit <span class="hljs-operator">+</span> blks_read), <span class="hljs-number">0</span>) <span class="hljs-keyword">AS</span> cache_hit_ratio<br><span class="hljs-keyword">FROM</span> pg_stat_database;<br><br><span class="hljs-comment">-- 检查慢查询（需要 pg_stat_statements 扩展）</span><br><span class="hljs-keyword">SELECT</span> query, calls, mean_exec_time, total_exec_time<br><span class="hljs-keyword">FROM</span> pg_stat_statements<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> mean_exec_time <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">10</span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-2-备份与恢复"><a href="#4-2-备份与恢复" class="headerlink" title="4.2 备份与恢复"></a>4.2 备份与恢复</h3><h4 id="全量备份脚本"><a href="#全量备份脚本" class="headerlink" title="全量备份脚本"></a>全量备份脚本</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-comment"># backup.sh - PostgreSQL 备份脚本</span><br><br>BACKUP_DIR=<span class="hljs-string">&quot;/backup/postgres&quot;</span><br>RETENTION_DAYS=7<br>DB_HOST=<span class="hljs-string">&quot;localhost&quot;</span><br>DB_PORT=<span class="hljs-string">&quot;5432&quot;</span><br>DB_NAME=<span class="hljs-string">&quot;mydb&quot;</span><br>DB_USER=<span class="hljs-string">&quot;admin&quot;</span><br><br><span class="hljs-comment"># 创建备份目录</span><br><span class="hljs-built_in">mkdir</span> -p <span class="hljs-variable">$&#123;BACKUP_DIR&#125;</span><br><br><span class="hljs-comment"># 生成备份文件名</span><br>DATE=$(<span class="hljs-built_in">date</span> +%Y%m%d_%H%M%S)<br>BACKUP_FILE=<span class="hljs-string">&quot;<span class="hljs-variable">$&#123;BACKUP_DIR&#125;</span>/<span class="hljs-variable">$&#123;DB_NAME&#125;</span>_<span class="hljs-variable">$&#123;DATE&#125;</span>.dump&quot;</span><br><br><span class="hljs-comment"># 执行备份</span><br>pg_dump -h <span class="hljs-variable">$&#123;DB_HOST&#125;</span> -p <span class="hljs-variable">$&#123;DB_PORT&#125;</span> -U <span class="hljs-variable">$&#123;DB_USER&#125;</span> -d <span class="hljs-variable">$&#123;DB_NAME&#125;</span> -Fc -f <span class="hljs-variable">$&#123;BACKUP_FILE&#125;</span><br><br><span class="hljs-comment"># 压缩备份</span><br>gzip <span class="hljs-variable">$&#123;BACKUP_FILE&#125;</span><br><br><span class="hljs-comment"># 清理过期备份</span><br>find <span class="hljs-variable">$&#123;BACKUP_DIR&#125;</span> -name <span class="hljs-string">&quot;*.dump.gz&quot;</span> -mtime +<span class="hljs-variable">$&#123;RETENTION_DAYS&#125;</span> -delete<br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Backup completed: <span class="hljs-variable">$&#123;BACKUP_FILE&#125;</span>.gz&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="Docker-环境备份"><a href="#Docker-环境备份" class="headerlink" title="Docker 环境备份"></a>Docker 环境备份</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 全量备份</span><br>docker <span class="hljs-built_in">exec</span> postgres pg_dump -U admin mydb -Fc &gt; backup.dump<br><br><span class="hljs-comment"># 压缩备份</span><br>docker <span class="hljs-built_in">exec</span> postgres pg_dump -U admin mydb | gzip &gt; backup.sql.gz<br><br><span class="hljs-comment"># 恢复</span><br>docker <span class="hljs-built_in">exec</span> -i postgres pg_restore -U admin -d mydb -Fc backup.dump<br></code></pre></td></tr></table></figure>
+
+<h4 id="定时备份（Crontab）"><a href="#定时备份（Crontab）" class="headerlink" title="定时备份（Crontab）"></a>定时备份（Crontab）</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 每天凌晨 2 点执行备份</span><br>0 2 * * * /opt/scripts/backup.sh &gt;&gt; /var/log/postgres_backup.log 2&gt;&amp;1<br><br><span class="hljs-comment"># 每小时执行增量备份（需要配置 WAL 归档）</span><br>0 * * * * /opt/scripts/wal_backup.sh<br></code></pre></td></tr></table></figure>
+
+<h4 id="基于时间点恢复（PITR）"><a href="#基于时间点恢复（PITR）" class="headerlink" title="基于时间点恢复（PITR）"></a>基于时间点恢复（PITR）</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 1. 创建基础备份</span><br>docker <span class="hljs-built_in">exec</span> postgres pg_basebackup -U admin -D /var/lib/postgresql/data/basebackup -Ft -z -P<br><br><span class="hljs-comment"># 2. 配置 WAL 归档（postgresql.conf）</span><br>wal_level = replica<br>max_wal_senders = 3<br>archive_mode = on<br>archive_command = <span class="hljs-string">&#x27;test ! -f /mnt/wal_archive/%f &amp;&amp; cp %p /mnt/wal_archive/%f&#x27;</span><br><br><span class="hljs-comment"># 3. 恢复到指定时间点</span><br>docker <span class="hljs-built_in">exec</span> postgres pg_restore -U admin -d mydb --point-in-time=<span class="hljs-string">&quot;2024-01-01 12:00:00&quot;</span> backup.dump<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-3-安全配置"><a href="#4-3-安全配置" class="headerlink" title="4.3 安全配置"></a>4.3 安全配置</h3><h4 id="创建应用专用账号"><a href="#创建应用专用账号" class="headerlink" title="创建应用专用账号"></a>创建应用专用账号</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 创建应用用户</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">USER</span> app_user <span class="hljs-keyword">WITH</span> PASSWORD <span class="hljs-string">&#x27;strong_password&#x27;</span>;<br><br><span class="hljs-comment">-- 授予连接权限</span><br><span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">CONNECT</span> <span class="hljs-keyword">ON</span> DATABASE mydb <span class="hljs-keyword">TO</span> app_user;<br><br><span class="hljs-comment">-- 授予 schema 权限</span><br><span class="hljs-keyword">GRANT</span> USAGE <span class="hljs-keyword">ON</span> SCHEMA public <span class="hljs-keyword">TO</span> app_user;<br><br><span class="hljs-comment">-- 授予表权限</span><br><span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">SELECT</span>, <span class="hljs-keyword">INSERT</span>, <span class="hljs-keyword">UPDATE</span>, <span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">ON</span> <span class="hljs-keyword">ALL</span> TABLES <span class="hljs-keyword">IN</span> SCHEMA public <span class="hljs-keyword">TO</span> app_user;<br><br><span class="hljs-comment">-- 授予序列权限（用于自增主键）</span><br><span class="hljs-keyword">GRANT</span> USAGE, <span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">ON</span> <span class="hljs-keyword">ALL</span> SEQUENCES <span class="hljs-keyword">IN</span> SCHEMA public <span class="hljs-keyword">TO</span> app_user;<br><br><span class="hljs-comment">-- 设置默认权限（对新创建的表生效）</span><br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">DEFAULT</span> PRIVILEGES <span class="hljs-keyword">IN</span> SCHEMA public<br><span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">SELECT</span>, <span class="hljs-keyword">INSERT</span>, <span class="hljs-keyword">UPDATE</span>, <span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">ON</span> TABLES <span class="hljs-keyword">TO</span> app_user;<br></code></pre></td></tr></table></figure>
+
+<h4 id="移除公开访问"><a href="#移除公开访问" class="headerlink" title="移除公开访问"></a>移除公开访问</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">REVOKE</span> <span class="hljs-keyword">ALL</span> <span class="hljs-keyword">ON</span> DATABASE mydb <span class="hljs-keyword">FROM</span> PUBLIC;<br></code></pre></td></tr></table></figure>
+
+<h4 id="开启-SSL-连接"><a href="#开启-SSL-连接" class="headerlink" title="开启 SSL 连接"></a>开启 SSL 连接</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- postgresql.conf 配置</span><br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">SYSTEM</span> <span class="hljs-keyword">SET</span> ssl <span class="hljs-operator">=</span> <span class="hljs-keyword">on</span>;<br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">SYSTEM</span> <span class="hljs-keyword">SET</span> ssl_cert_file <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;/path/to/server.crt&#x27;</span>;<br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">SYSTEM</span> <span class="hljs-keyword">SET</span> ssl_key_file <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;/path/to/server.key&#x27;</span>;<br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">SYSTEM</span> <span class="hljs-keyword">SET</span> ssl_ca_file <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;/path/to/ca.crt&#x27;</span>;<br><br><span class="hljs-comment">-- 强制使用 SSL（pg_hba.conf）</span><br>host <span class="hljs-keyword">all</span> <span class="hljs-keyword">all</span> <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span><span class="hljs-operator">/</span><span class="hljs-number">0</span> scram<span class="hljs-operator">-</span>sha<span class="hljs-number">-256</span> hostssl<br></code></pre></td></tr></table></figure>
+
+<h4 id="密码策略"><a href="#密码策略" class="headerlink" title="密码策略"></a>密码策略</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 设置密码复杂度要求（需要 pgpwdcheck 扩展）</span><br><span class="hljs-comment">-- 或在应用层实现密码策略</span><br><br><span class="hljs-comment">-- 密码过期策略</span><br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">USER</span> app_user VALID UNTIL <span class="hljs-string">&#x27;2025-12-31&#x27;</span>;<br><br><span class="hljs-comment">-- 查看用户密码过期时间</span><br><span class="hljs-keyword">SELECT</span> usename, valuntil <span class="hljs-keyword">FROM</span> pg_shadow;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-4-高可用架构"><a href="#4-4-高可用架构" class="headerlink" title="4.4 高可用架构"></a>4.4 高可用架构</h3><h4 id="流复制配置"><a href="#流复制配置" class="headerlink" title="流复制配置"></a>流复制配置</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 主库配置（postgresql.conf）</span><br>wal_level = replica<br>max_wal_senders = 3<br>wal_keep_size = 1GB<br>hot_standby = on<br><br><span class="hljs-comment"># 主库配置（pg_hba.conf）- 添加备用库连接</span><br>host replication all 192.168.1.0/24 scram-sha-256<br><br><span class="hljs-comment"># 从库配置（postgresql.conf）</span><br>hot_standby = on<br>primary_conninfo = <span class="hljs-string">&#x27;host=192.168.1.100 port=5432 user=repl password=xxx application_name=standby1&#x27;</span><br><br><span class="hljs-comment"># 从库恢复配置（standby.signal）</span><br>recovery_target_timeline = <span class="hljs-string">&#x27;latest&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、开发规范"><a href="#五、开发规范" class="headerlink" title="五、开发规范"></a>五、开发规范</h2><h3 id="5-1-表设计规范"><a href="#5-1-表设计规范" class="headerlink" title="5.1 表设计规范"></a>5.1 表设计规范</h3><h4 id="主键设计"><a href="#主键设计" class="headerlink" title="主键设计"></a>主键设计</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- ✓ 推荐：使用自增主键</span><br><span class="hljs-keyword">CREATE TABLE</span> users (<br>    id BIGSERIAL <span class="hljs-keyword">PRIMARY KEY</span>,<br>    user_name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">NOT NULL</span>,<br>    created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span><br>);<br><br><span class="hljs-comment">-- ✓ 推荐：业务主键单独建立唯一索引</span><br><span class="hljs-keyword">CREATE TABLE</span> orders (<br>    id BIGSERIAL <span class="hljs-keyword">PRIMARY KEY</span>,<br>    order_no <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">UNIQUE</span>,<br>    user_id <span class="hljs-type">BIGINT</span> <span class="hljs-keyword">NOT NULL</span>,<br>    amount <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">10</span>,<span class="hljs-number">2</span>) <span class="hljs-keyword">NOT NULL</span><br>);<br></code></pre></td></tr></table></figure>
+
+<h4 id="时间字段规范"><a href="#时间字段规范" class="headerlink" title="时间字段规范"></a>时间字段规范</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- ✓ 标准时间字段</span><br><span class="hljs-keyword">CREATE TABLE</span> example (<br>    id BIGSERIAL <span class="hljs-keyword">PRIMARY KEY</span>,<br>    created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,<br>    updated_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,<br>    deleted_at <span class="hljs-type">TIMESTAMP</span>,         <span class="hljs-comment">-- 软删除</span><br>    created_by <span class="hljs-type">BIGINT</span>,            <span class="hljs-comment">-- 创建人ID</span><br>    updated_by <span class="hljs-type">BIGINT</span>,             <span class="hljs-comment">-- 更新人ID</span><br>    version <span class="hljs-type">INT</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">1</span>  <span class="hljs-comment">-- 乐观锁版本号</span><br>);<br></code></pre></td></tr></table></figure>
+
+<h4 id="外键与索引"><a href="#外键与索引" class="headerlink" title="外键与索引"></a>外键与索引</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 外键必须建立索引</span><br><span class="hljs-keyword">CREATE TABLE</span> orders (<br>    id BIGSERIAL <span class="hljs-keyword">PRIMARY KEY</span>,<br>    user_id <span class="hljs-type">BIGINT</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">REFERENCES</span> users(id),<br>    product_id <span class="hljs-type">BIGINT</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">REFERENCES</span> products(id),<br>    amount <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">10</span>,<span class="hljs-number">2</span>) <span class="hljs-keyword">NOT NULL</span>,<br>    <span class="hljs-keyword">CONSTRAINT</span> fk_orders_user <span class="hljs-keyword">FOREIGN KEY</span> (user_id) <span class="hljs-keyword">REFERENCES</span> users(id),<br>    <span class="hljs-keyword">CONSTRAINT</span> fk_orders_product <span class="hljs-keyword">FOREIGN KEY</span> (product_id) <span class="hljs-keyword">REFERENCES</span> products(id)<br>);<br><br><span class="hljs-comment">-- 为高频查询字段建立索引</span><br><span class="hljs-keyword">CREATE</span> INDEX idx_orders_user_id <span class="hljs-keyword">ON</span> orders(user_id);<br><span class="hljs-keyword">CREATE</span> INDEX idx_orders_created_at <span class="hljs-keyword">ON</span> orders(created_at <span class="hljs-keyword">DESC</span>);<br><span class="hljs-keyword">CREATE</span> INDEX idx_orders_status <span class="hljs-keyword">ON</span> orders(status) <span class="hljs-keyword">WHERE</span> status <span class="hljs-operator">!=</span> <span class="hljs-string">&#x27;completed&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="5-2-字段类型选择"><a href="#5-2-字段类型选择" class="headerlink" title="5.2 字段类型选择"></a>5.2 字段类型选择</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐类型</th>
+<th>避免</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主键</td>
+<td>BIGSERIAL &#x2F; BIGINT</td>
+<td>VARCHAR</td>
+</tr>
+<tr>
+<td>状态&#x2F;枚举</td>
+<td>SMALLINT &#x2F; VARCHAR(20)</td>
+<td>TEXT</td>
+</tr>
+<tr>
+<td>金额&#x2F;精确数</td>
+<td>DECIMAL(p,s)</td>
+<td>FLOAT &#x2F; DOUBLE</td>
+</tr>
+<tr>
+<td>时间</td>
+<td>TIMESTAMP &#x2F; DATE</td>
+<td>VARCHAR</td>
+</tr>
+<tr>
+<td>布尔</td>
+<td>BOOLEAN</td>
+<td>INTEGER</td>
+</tr>
+<tr>
+<td>大文本</td>
+<td>TEXT</td>
+<td>VARCHAR(大值)</td>
+</tr>
+<tr>
+<td>JSON数据</td>
+<td>JSONB</td>
+<td>JSON</td>
+</tr>
+<tr>
+<td>IP地址</td>
+<td>INET</td>
+<td>VARCHAR</td>
+</tr>
+<tr>
+<td>UUID</td>
+<td>UUID</td>
+<td>VARCHAR(36)</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>VARCHAR(255)</td>
+<td>TEXT</td>
+</tr>
+</tbody></table>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- ✓ 推荐：使用 JSONB 存储半结构化数据</span><br><span class="hljs-keyword">CREATE TABLE</span> events (<br>    id BIGSERIAL <span class="hljs-keyword">PRIMARY KEY</span>,<br>    event_type <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">NOT NULL</span>,<br>    event_data JSONB <span class="hljs-keyword">NOT NULL</span>,<br>    created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span><br>);<br><br><span class="hljs-comment">-- 索引 JSONB 字段</span><br><span class="hljs-keyword">CREATE</span> INDEX idx_events_type <span class="hljs-keyword">ON</span> events((event_data<span class="hljs-operator">-</span><span class="hljs-operator">&gt;&gt;</span><span class="hljs-string">&#x27;type&#x27;</span>));<br><span class="hljs-keyword">CREATE</span> INDEX idx_events_data <span class="hljs-keyword">ON</span> events <span class="hljs-keyword">USING</span> GIN (event_data);<br></code></pre></td></tr></table></figure>
+
+<h3 id="5-3-索引设计"><a href="#5-3-索引设计" class="headerlink" title="5.3 索引设计"></a>5.3 索引设计</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 单列索引</span><br><span class="hljs-keyword">CREATE</span> INDEX idx_users_email <span class="hljs-keyword">ON</span> users(email);<br><br><span class="hljs-comment">-- 复合索引：遵循最左前缀原则</span><br><span class="hljs-keyword">CREATE</span> INDEX idx_orders_user_status <span class="hljs-keyword">ON</span> orders(user_id, status);<br><br><span class="hljs-comment">-- 部分索引</span><br><span class="hljs-keyword">CREATE</span> INDEX idx_orders_active <span class="hljs-keyword">ON</span> orders(user_id, created_at)<br><span class="hljs-keyword">WHERE</span> status <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;pending&#x27;</span>;<br><br><span class="hljs-comment">-- 表达式索引</span><br><span class="hljs-keyword">CREATE</span> INDEX idx_users_lower_email <span class="hljs-keyword">ON</span> users(<span class="hljs-built_in">LOWER</span>(email));<br><br><span class="hljs-comment">-- 唯一索引</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">UNIQUE</span> INDEX uq_users_email <span class="hljs-keyword">ON</span> users(<span class="hljs-built_in">LOWER</span>(email));<br><br><span class="hljs-comment">-- ✗ 禁止事项</span><br><span class="hljs-comment">-- ✗ 不在低选择性字段建索引（如性别）</span><br><span class="hljs-comment">-- ✗ 避免在频繁更新的字段建索引</span><br><span class="hljs-comment">-- ✗ 避免重复索引</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="5-4-查询规范"><a href="#5-4-查询规范" class="headerlink" title="5.4 查询规范"></a>5.4 查询规范</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- ✓ 推荐：明确列名，避免 SELECT *</span><br><span class="hljs-keyword">SELECT</span> id, user_name, email <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><br><span class="hljs-comment">-- ✓ 推荐：使用 EXPLAIN ANALYZE 分析查询</span><br>EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> orders <span class="hljs-keyword">WHERE</span> user_id <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br><br><span class="hljs-comment">-- ✓ 推荐：批量操作</span><br><span class="hljs-keyword">INSERT INTO</span> users (name, email) <span class="hljs-keyword">VALUES</span><br>(<span class="hljs-string">&#x27;user1&#x27;</span>, <span class="hljs-string">&#x27;user1@example.com&#x27;</span>),<br>(<span class="hljs-string">&#x27;user2&#x27;</span>, <span class="hljs-string">&#x27;user2@example.com&#x27;</span>);<br><br><span class="hljs-comment">-- ✓ 推荐：使用 CTE 简化复杂查询</span><br><span class="hljs-keyword">WITH</span> active_users <span class="hljs-keyword">AS</span> (<br>    <span class="hljs-keyword">SELECT</span> id, name <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> status <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;active&#x27;</span><br>)<br><span class="hljs-keyword">SELECT</span> o.<span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> orders o<br><span class="hljs-keyword">JOIN</span> active_users au <span class="hljs-keyword">ON</span> o.user_id <span class="hljs-operator">=</span> au.id;<br><br><span class="hljs-comment">-- ✓ 推荐：使用 LIMIT 限制结果集</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> large_table <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> created_at <span class="hljs-keyword">DESC</span> LIMIT <span class="hljs-number">100</span>;<br><br><span class="hljs-comment">-- ✗ 避免：在索引列上使用函数</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> orders <span class="hljs-keyword">WHERE</span> <span class="hljs-type">DATE</span>(created_at) <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;2024-01-01&#x27;</span>;<br><span class="hljs-comment">-- ✓ 应改为：</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> orders<br><span class="hljs-keyword">WHERE</span> created_at <span class="hljs-operator">&gt;=</span> <span class="hljs-string">&#x27;2024-01-01 00:00:00&#x27;</span><br>  <span class="hljs-keyword">AND</span> created_at <span class="hljs-operator">&lt;</span> <span class="hljs-string">&#x27;2024-01-02 00:00:00&#x27;</span>;<br><br><span class="hljs-comment">-- ✗ 避免：使用 NOT IN（使用 NOT EXISTS 替代）</span><br><span class="hljs-comment">-- ✗ 避免：隐式类型转换（如 WHERE id = &#x27;1&#x27;）</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="5-5-事务规范"><a href="#5-5-事务规范" class="headerlink" title="5.5 事务规范"></a>5.5 事务规范</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- ✓ 推荐：短事务</span><br><span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> balance <span class="hljs-operator">=</span> balance <span class="hljs-operator">-</span> <span class="hljs-number">100</span> <span class="hljs-keyword">WHERE</span> user_id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> balance <span class="hljs-operator">=</span> balance <span class="hljs-operator">+</span> <span class="hljs-number">100</span> <span class="hljs-keyword">WHERE</span> user_id <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br><span class="hljs-keyword">COMMIT</span>;<br><br><span class="hljs-comment">-- ✓ 推荐：使用 SAVEPOINT</span><br><span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-keyword">INSERT INTO</span> orders (user_id, amount) <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">1</span>, <span class="hljs-number">100</span>);<br><span class="hljs-keyword">SAVEPOINT</span> sp1;<br><span class="hljs-keyword">INSERT INTO</span> order_items (order_id, product_id) <span class="hljs-keyword">VALUES</span> (currval(<span class="hljs-string">&#x27;orders_id_seq&#x27;</span>), <span class="hljs-number">1</span>);<br><span class="hljs-keyword">ROLLBACK</span> <span class="hljs-keyword">TO</span> <span class="hljs-keyword">SAVEPOINT</span> sp1;<br><span class="hljs-keyword">COMMIT</span>;<br><br><span class="hljs-comment">-- ✓ 推荐：设置事务超时</span><br><span class="hljs-keyword">SET</span> <span class="hljs-keyword">LOCAL</span> statement_timeout <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;30s&#x27;</span>;<br><span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-comment">-- 事务操作</span><br><span class="hljs-keyword">COMMIT</span>;<br><br><span class="hljs-comment">-- ✗ 避免：长事务和嵌套事务</span><br><span class="hljs-comment">-- ✗ 避免：在事务中执行不必要的 SELECT</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="5-6-分区表设计"><a href="#5-6-分区表设计" class="headerlink" title="5.6 分区表设计"></a>5.6 分区表设计</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- ✓ 推荐：基于时间分区</span><br><span class="hljs-keyword">CREATE TABLE</span> logs (<br>    id BIGSERIAL,<br>    created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">NOT NULL</span>,<br>    message TEXT<br>) <span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">BY</span> <span class="hljs-keyword">RANGE</span> (created_at);<br><br><span class="hljs-comment">-- 创建月度分区</span><br><span class="hljs-keyword">CREATE TABLE</span> logs_2024_01 <span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">OF</span> logs<br>    <span class="hljs-keyword">FOR</span> <span class="hljs-keyword">VALUES</span> <span class="hljs-keyword">FROM</span> (<span class="hljs-string">&#x27;2024-01-01&#x27;</span>) <span class="hljs-keyword">TO</span> (<span class="hljs-string">&#x27;2024-02-01&#x27;</span>);<br><br><span class="hljs-keyword">CREATE TABLE</span> logs_2024_02 <span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">OF</span> logs<br>    <span class="hljs-keyword">FOR</span> <span class="hljs-keyword">VALUES</span> <span class="hljs-keyword">FROM</span> (<span class="hljs-string">&#x27;2024-02-01&#x27;</span>) <span class="hljs-keyword">TO</span> (<span class="hljs-string">&#x27;2024-03-01&#x27;</span>);<br><br><span class="hljs-comment">-- 默认分区（捕获未匹配的数据）</span><br><span class="hljs-keyword">CREATE TABLE</span> logs_default <span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">OF</span> logs <span class="hljs-keyword">DEFAULT</span>;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、常见问题处理"><a href="#六、常见问题处理" class="headerlink" title="六、常见问题处理"></a>六、常见问题处理</h2><h3 id="6-1-锁等待排查"><a href="#6-1-锁等待排查" class="headerlink" title="6.1 锁等待排查"></a>6.1 锁等待排查</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 查看锁信息</span><br><span class="hljs-keyword">SELECT</span><br>    l.locktype,<br>    l.relation::regclass,<br>    l.mode,<br>    l.granted,<br>    l.pid,<br>    a.query<br><span class="hljs-keyword">FROM</span> pg_locks l<br><span class="hljs-keyword">JOIN</span> pg_stat_activity a <span class="hljs-keyword">ON</span> l.pid <span class="hljs-operator">=</span> a.pid<br><span class="hljs-keyword">WHERE</span> l.locktype <span class="hljs-operator">!=</span> <span class="hljs-string">&#x27;virtualxid&#x27;</span>;<br><br><span class="hljs-comment">-- 查看等待中的锁</span><br><span class="hljs-keyword">SELECT</span><br>    l.locktype,<br>    l.relation::regclass,<br>    l.mode,<br>    l.pid,<br>    a.query<br><span class="hljs-keyword">FROM</span> pg_locks l<br><span class="hljs-keyword">JOIN</span> pg_stat_activity a <span class="hljs-keyword">ON</span> l.pid <span class="hljs-operator">=</span> a.pid<br><span class="hljs-keyword">WHERE</span> l.granted <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>;<br><br><span class="hljs-comment">-- 终止阻塞进程</span><br><span class="hljs-keyword">SELECT</span> pg_terminate_backend(pid)<br><span class="hljs-keyword">FROM</span> pg_stat_activity<br><span class="hljs-keyword">WHERE</span> state <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;active&#x27;</span><br><span class="hljs-keyword">AND</span> query_start <span class="hljs-operator">&lt;</span> NOW() <span class="hljs-operator">-</span> <span class="hljs-type">INTERVAL</span> <span class="hljs-string">&#x27;5 minutes&#x27;</span><br><span class="hljs-keyword">AND</span> state_change <span class="hljs-operator">&lt;</span> NOW() <span class="hljs-operator">-</span> <span class="hljs-type">INTERVAL</span> <span class="hljs-string">&#x27;5 minutes&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-2-连接数过高"><a href="#6-2-连接数过高" class="headerlink" title="6.2 连接数过高"></a>6.2 连接数过高</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 查看最大连接数</span><br><span class="hljs-keyword">SHOW</span> max_connections;<br><br><span class="hljs-comment">-- 查看当前连接</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> pg_stat_activity;<br><br><span class="hljs-comment">-- 按用户统计连接数</span><br><span class="hljs-keyword">SELECT</span> usename, <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>)<br><span class="hljs-keyword">FROM</span> pg_stat_activity<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> usename;<br><br><span class="hljs-comment">-- 设置连接限制</span><br><span class="hljs-keyword">ALTER</span> DATABASE mydb CONNECTION LIMIT <span class="hljs-number">100</span>;<br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">USER</span> app_user CONNECTION LIMIT <span class="hljs-number">50</span>;<br><br><span class="hljs-comment">-- 查看空闲连接</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> pg_stat_activity <span class="hljs-keyword">WHERE</span> state <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;idle&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-3-数据库膨胀处理"><a href="#6-3-数据库膨胀处理" class="headerlink" title="6.3 数据库膨胀处理"></a>6.3 数据库膨胀处理</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 检查表大小</span><br><span class="hljs-keyword">SELECT</span><br>    relname,<br>    pg_size_pretty(pg_total_relation_size(relid)) <span class="hljs-keyword">AS</span> total_size,<br>    pg_size_pretty(pg_relation_size(relid)) <span class="hljs-keyword">AS</span> table_size,<br>    pg_size_pretty(pg_total_relation_size(relid) <span class="hljs-operator">-</span> pg_relation_size(relid)) <span class="hljs-keyword">AS</span> index_size<br><span class="hljs-keyword">FROM</span> pg_stat_user_tables<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> pg_total_relation_size(relid) <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">10</span>;<br><br><span class="hljs-comment">-- 检查索引膨胀</span><br><span class="hljs-keyword">SELECT</span><br>    indexrelname,<br>    pg_size_pretty(pg_relation_size(relid)) <span class="hljs-keyword">AS</span> index_size,<br>    idx_scan,<br>    idx_tup_read,<br>    idx_tup_fetch<br><span class="hljs-keyword">FROM</span> pg_stat_user_indexes<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> pg_relation_size(relid) <span class="hljs-keyword">DESC</span>;<br><br><span class="hljs-comment">-- 重建索引</span><br>REINDEX INDEX idx_orders_user_id;<br><br><span class="hljs-comment">-- 重建所有索引</span><br>REINDEX DATABASE mydb;<br><br><span class="hljs-comment">-- 清理表空间</span><br>VACUUM <span class="hljs-keyword">FULL</span> users;<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-4-慢查询排查"><a href="#6-4-慢查询排查" class="headerlink" title="6.4 慢查询排查"></a>6.4 慢查询排查</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 开启查询统计（需要 pg_stat_statements）</span><br><span class="hljs-keyword">CREATE</span> EXTENSION IF <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span> pg_stat_statements;<br><br><span class="hljs-comment">-- 查看最慢的查询</span><br><span class="hljs-keyword">SELECT</span><br>    query,<br>    calls,<br>    total_exec_time,<br>    mean_exec_time,<br>    <span class="hljs-keyword">rows</span><br><span class="hljs-keyword">FROM</span> pg_stat_statements<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> mean_exec_time <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">10</span>;<br><br><span class="hljs-comment">-- 查看执行次数最多的查询</span><br><span class="hljs-keyword">SELECT</span><br>    query,<br>    calls,<br>    total_exec_time<br><span class="hljs-keyword">FROM</span> pg_stat_statements<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> calls <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">10</span>;<br><br><span class="hljs-comment">-- 查看 IO 消耗最大的查询</span><br><span class="hljs-keyword">SELECT</span><br>    query,<br>    calls,<br>    shared_blks_hit,<br>    shared_blks_read<br><span class="hljs-keyword">FROM</span> pg_stat_statements<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> shared_blks_read <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">10</span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-5-数据库扩容"><a href="#6-5-数据库扩容" class="headerlink" title="6.5 数据库扩容"></a>6.5 数据库扩容</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 添加表空间</span><br><span class="hljs-keyword">CREATE</span> TABLESPACE fast_storage LOCATION <span class="hljs-string">&#x27;/fast-disk/tablespace&#x27;</span>;<br><br><span class="hljs-comment">-- 移动表到新表空间</span><br><span class="hljs-keyword">ALTER TABLE</span> orders <span class="hljs-keyword">SET</span> TABLESPACE fast_storage;<br><br><span class="hljs-comment">-- 移动索引到新表空间</span><br><span class="hljs-keyword">ALTER</span> INDEX idx_orders_user_id <span class="hljs-keyword">SET</span> TABLESPACE fast_storage;<br><br><span class="hljs-comment">-- 查看表空间使用情况</span><br><span class="hljs-keyword">SELECT</span><br>    spcname,<br>    pg_size_pretty(pg_tablespace_size(spcname)) <span class="hljs-keyword">AS</span> size<br><span class="hljs-keyword">FROM</span> pg_tablespace;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、配置参考"><a href="#七、配置参考" class="headerlink" title="七、配置参考"></a>七、配置参考</h2><h3 id="7-1-关键配置参数说明"><a href="#7-1-关键配置参数说明" class="headerlink" title="7.1 关键配置参数说明"></a>7.1 关键配置参数说明</h3><h4 id="连接配置"><a href="#连接配置" class="headerlink" title="连接配置"></a>连接配置</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+<th>推荐值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>max_connections</code></td>
+<td>100</td>
+<td>最大客户端连接数</td>
+<td>200-500（根据内存调整）</td>
+</tr>
+<tr>
+<td><code>superuser_reserved_connections</code></td>
+<td>3</td>
+<td>超级用户保留连接数</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>tcp_keepalives_idle</code></td>
+<td>0</td>
+<td>TCP保活空闲时间(秒)</td>
+<td>60</td>
+</tr>
+<tr>
+<td><code>tcp_keepalives_interval</code></td>
+<td>0</td>
+<td>TCP保活间隔(秒)</td>
+<td>30</td>
+</tr>
+<tr>
+<td><code>statement_timeout</code></td>
+<td>0</td>
+<td>语句超时时间(毫秒)</td>
+<td>30000（生产环境建议设置）</td>
+</tr>
+</tbody></table>
+<h4 id="内存配置"><a href="#内存配置" class="headerlink" title="内存配置"></a>内存配置</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+<th>推荐值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>shared_buffers</code></td>
+<td>128MB</td>
+<td>共享缓冲区大小</td>
+<td>机器内存的25%</td>
+</tr>
+<tr>
+<td><code>work_mem</code></td>
+<td>4MB</td>
+<td>排序&#x2F;哈希操作内存</td>
+<td>64-256MB</td>
+</tr>
+<tr>
+<td><code>maintenance_work_mem</code></td>
+<td>64MB</td>
+<td>维护操作内存(VACUUM&#x2F;ANALYZE)</td>
+<td>256-512MB</td>
+</tr>
+<tr>
+<td><code>effective_cache_size</code></td>
+<td>4GB</td>
+<td>操作系统缓存估计值</td>
+<td>机器内存的75%</td>
+</tr>
+<tr>
+<td><code>temp_buffers</code></td>
+<td>8MB</td>
+<td>临时缓冲区大小</td>
+<td>64MB</td>
+</tr>
+</tbody></table>
+<h4 id="写入配置（WAL）"><a href="#写入配置（WAL）" class="headerlink" title="写入配置（WAL）"></a>写入配置（WAL）</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+<th>推荐值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>wal_level</code></td>
+<td>replica</td>
+<td>WAL日志级别</td>
+<td>replica（流复制用）</td>
+</tr>
+<tr>
+<td><code>fsync</code></td>
+<td>on</td>
+<td>强制同步写入</td>
+<td>on（安全，不建议关闭）</td>
+</tr>
+<tr>
+<td><code>synchronous_commit</code></td>
+<td>on</td>
+<td>同步提交模式</td>
+<td>on</td>
+</tr>
+<tr>
+<td><code>wal_buffers</code></td>
+<td>4MB</td>
+<td>WAL缓冲区大小</td>
+<td>16-64MB</td>
+</tr>
+<tr>
+<td><code>checkpoint_timeout</code></td>
+<td>5min</td>
+<td>检查点超时时间</td>
+<td>10-30min</td>
+</tr>
+<tr>
+<td><code>checkpoint_completion_target</code></td>
+<td>0.5</td>
+<td>检查点完成目标</td>
+<td>0.7-0.9</td>
+</tr>
+<tr>
+<td><code>max_wal_size</code></td>
+<td>1GB</td>
+<td>WAL最大 size</td>
+<td>2-4GB</td>
+</tr>
+<tr>
+<td><code>min_wal_size</code></td>
+<td>80MB</td>
+<td>WAL最小 size</td>
+<td>256MB</td>
+</tr>
+</tbody></table>
+<h4 id="日志配置"><a href="#日志配置" class="headerlink" title="日志配置"></a>日志配置</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+<th>推荐值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>log_destination</code></td>
+<td>stderr</td>
+<td>日志输出目标</td>
+<td>csvlog（便于分析）</td>
+</tr>
+<tr>
+<td><code>logging_collector</code></td>
+<td>off</td>
+<td>是否启用日志收集器</td>
+<td>on</td>
+</tr>
+<tr>
+<td><code>log_directory</code></td>
+<td>log</td>
+<td>日志目录</td>
+<td>pg_log</td>
+</tr>
+<tr>
+<td><code>log_filename</code></td>
+<td>postgresql-%Y-%m-%d</td>
+<td>日志文件名格式</td>
+<td>postgresql-%Y%m%d</td>
+</tr>
+<tr>
+<td><code>log_rotation_age</code></td>
+<td>1d</td>
+<td>日志轮转时间</td>
+<td>1d</td>
+</tr>
+<tr>
+<td><code>log_rotation_size</code></td>
+<td>10MB</td>
+<td>日志轮转大小</td>
+<td>100MB</td>
+</tr>
+<tr>
+<td><code>log_min_duration_statement</code></td>
+<td>-1</td>
+<td>记录慢查询阈值(毫秒)</td>
+<td>1000（生产环境）</td>
+</tr>
+<tr>
+<td><code>log_checkpoints</code></td>
+<td>off</td>
+<td>记录检查点</td>
+<td>on（调试用）</td>
+</tr>
+<tr>
+<td><code>log_connections</code></td>
+<td>off</td>
+<td>记录连接</td>
+<td>off（生产环境）</td>
+</tr>
+<tr>
+<td><code>log_disconnections</code></td>
+<td>off</td>
+<td>记录断开连接</td>
+<td>off（生产环境）</td>
+</tr>
+<tr>
+<td><code>log_lock_waits</code></td>
+<td>off</td>
+<td>记录锁等待</td>
+<td>on</td>
+</tr>
+<tr>
+<td><code>log_temp_files</code></td>
+<td>-1</td>
+<td>记录临时文件大小</td>
+<td>0（记录所有）</td>
+</tr>
+</tbody></table>
+<h4 id="慢查询记录配置"><a href="#慢查询记录配置" class="headerlink" title="慢查询记录配置"></a>慢查询记录配置</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+<th>推荐值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>log_min_duration_statement</code></td>
+<td>-1</td>
+<td>慢查询阈值(毫秒)，-1表示关闭</td>
+<td>1000（生产环境）</td>
+</tr>
+<tr>
+<td><code>log_statement</code></td>
+<td>none</td>
+<td>记录哪些类型的语句</td>
+<td>none（用慢查询日志即可）</td>
+</tr>
+<tr>
+<td><code>log_duration</code></td>
+<td>off</td>
+<td>记录每个语句的执行时间</td>
+<td>off</td>
+</tr>
+<tr>
+<td><code>log_line_prefix</code></td>
+<td>%m [%p]</td>
+<td>日志行前缀格式</td>
+<td><code>%m [%p] %q%u@%d </code></td>
+</tr>
+</tbody></table>
+<h4 id="pg-stat-statements-扩展（推荐）"><a href="#pg-stat-statements-扩展（推荐）" class="headerlink" title="pg_stat_statements 扩展（推荐）"></a>pg_stat_statements 扩展（推荐）</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 安装扩展</span><br><span class="hljs-keyword">CREATE</span> EXTENSION IF <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span> pg_stat_statements;<br><br><span class="hljs-comment">-- 查看最慢的查询</span><br><span class="hljs-keyword">SELECT</span><br>    query,<br>    calls,<br>    total_exec_time,<br>    mean_exec_time,<br>    min_exec_time,<br>    max_exec_time,<br>    <span class="hljs-keyword">rows</span><br><span class="hljs-keyword">FROM</span> pg_stat_statements<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> mean_exec_time <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">10</span>;<br><br><span class="hljs-comment">-- 查看执行次数最多的查询</span><br><span class="hljs-keyword">SELECT</span><br>    query,<br>    calls,<br>    total_exec_time,<br>    mean_exec_time<br><span class="hljs-keyword">FROM</span> pg_stat_statements<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> calls <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">10</span>;<br><br><span class="hljs-comment">-- 查看 IO 消耗最大的查询</span><br><span class="hljs-keyword">SELECT</span><br>    query,<br>    calls,<br>    shared_blks_hit,<br>    shared_blks_read,<br>    shared_blks_written<br><span class="hljs-keyword">FROM</span> pg_stat_statements<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> shared_blks_read <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">10</span>;<br><br><span class="hljs-comment">-- 查看缓存命中率最低的查询</span><br><span class="hljs-keyword">SELECT</span><br>    query,<br>    calls,<br>    round(<span class="hljs-number">100.0</span> <span class="hljs-operator">*</span> shared_blks_hit <span class="hljs-operator">/</span> <span class="hljs-built_in">nullif</span>(shared_blks_hit <span class="hljs-operator">+</span> shared_blks_read, <span class="hljs-number">0</span>), <span class="hljs-number">2</span>) <span class="hljs-keyword">AS</span> cache_hit_ratio<br><span class="hljs-keyword">FROM</span> pg_stat_statements<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> cache_hit_ratio <span class="hljs-keyword">ASC</span><br>LIMIT <span class="hljs-number">10</span>;<br><br><span class="hljs-comment">-- 重置统计数据（需要超级用户权限）</span><br><span class="hljs-keyword">SELECT</span> pg_stat_statements_reset();<br></code></pre></td></tr></table></figure>
+
+<h4 id="慢查询分析示例"><a href="#慢查询分析示例" class="headerlink" title="慢查询分析示例"></a>慢查询分析示例</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 开启慢查询日志（超过 1 秒）</span><br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">SYSTEM</span> <span class="hljs-keyword">SET</span> log_min_duration_statement <span class="hljs-operator">=</span> <span class="hljs-number">1000</span>;<br><br><span class="hljs-comment">-- 重新加载配置</span><br><span class="hljs-keyword">SELECT</span> pg_reload_conf();<br><br><span class="hljs-comment">-- 查看慢查询日志文件</span><br><span class="hljs-comment">-- 位置：pg_log/postgresql-*.log</span><br><br><span class="hljs-comment">-- 日志格式示例</span><br><span class="hljs-comment">-- 2024-01-01 12:00:00.001 UTC [12345] app_user@app_db LOG:  duration: 2156.234 ms  statement: SELECT * FROM orders WHERE user_id = 100</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="查询规划配置"><a href="#查询规划配置" class="headerlink" title="查询规划配置"></a>查询规划配置</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+<th>推荐值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>random_page_cost</code></td>
+<td>4.0</td>
+<td>随机页面读取成本</td>
+<td>1.1（SSD）</td>
+</tr>
+<tr>
+<td><code>seq_page_cost</code></td>
+<td>1.0</td>
+<td>顺序页面读取成本</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td><code>effective_io_concurrency</code></td>
+<td>1</td>
+<td>有效IO并发数</td>
+<td>200（SSD）</td>
+</tr>
+<tr>
+<td><code>default_statistics_target</code></td>
+<td>100</td>
+<td>统计信息目标值</td>
+<td>100-500</td>
+</tr>
+<tr>
+<td><code>constraint_exclusion</code></td>
+<td>partition</td>
+<td>约束排除</td>
+<td>partition</td>
+</tr>
+</tbody></table>
+<h4 id="超时配置"><a href="#超时配置" class="headerlink" title="超时配置"></a>超时配置</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+<th>推荐值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>idle_session_timeout</code></td>
+<td>0</td>
+<td>空闲会话超时</td>
+<td>3600000（1小时）</td>
+</tr>
+<tr>
+<td><code>idle_in_transaction_session_timeout</code></td>
+<td>0</td>
+<td>空闲事务超时</td>
+<td>300000（5分钟）</td>
+</tr>
+<tr>
+<td><code>lock_timeout</code></td>
+<td>0</td>
+<td>锁等待超时(毫秒)</td>
+<td>10000</td>
+</tr>
+<tr>
+<td><code>deadlock_timeout</code></td>
+<td>1s</td>
+<td>死锁检测间隔</td>
+<td>1s</td>
+</tr>
+</tbody></table>
+<h3 id="7-2-配置参数调整指南"><a href="#7-2-配置参数调整指南" class="headerlink" title="7.2 配置参数调整指南"></a>7.2 配置参数调整指南</h3><h4 id="根据内存调整"><a href="#根据内存调整" class="headerlink" title="根据内存调整"></a>根据内存调整</h4><table>
+<thead>
+<tr>
+<th>机器内存</th>
+<th>shared_buffers</th>
+<th>work_mem</th>
+<th>maintenance_work_mem</th>
+<th>effective_cache_size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2GB</td>
+<td>512MB</td>
+<td>32MB</td>
+<td>128MB</td>
+<td>1.5GB</td>
+</tr>
+<tr>
+<td>4GB</td>
+<td>1GB</td>
+<td>64MB</td>
+<td>256MB</td>
+<td>3GB</td>
+</tr>
+<tr>
+<td>8GB</td>
+<td>2GB</td>
+<td>64MB</td>
+<td>512MB</td>
+<td>6GB</td>
+</tr>
+<tr>
+<td>16GB</td>
+<td>4GB</td>
+<td>128MB</td>
+<td>512MB</td>
+<td>12GB</td>
+</tr>
+<tr>
+<td>32GB</td>
+<td>8GB</td>
+<td>256MB</td>
+<td>1024MB</td>
+<td>24GB</td>
+</tr>
+</tbody></table>
+<h4 id="根据连接数调整"><a href="#根据连接数调整" class="headerlink" title="根据连接数调整"></a>根据连接数调整</h4><table>
+<thead>
+<tr>
+<th>max_connections</th>
+<th>shared_buffers</th>
+<th>work_mem</th>
+<th>推荐场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>100</td>
+<td>256MB</td>
+<td>64MB</td>
+<td>开发&#x2F;测试</td>
+</tr>
+<tr>
+<td>200</td>
+<td>1GB</td>
+<td>64MB</td>
+<td>小规模生产</td>
+</tr>
+<tr>
+<td>500</td>
+<td>4GB</td>
+<td>64MB</td>
+<td>中等规模生产</td>
+</tr>
+<tr>
+<td>1000</td>
+<td>8GB</td>
+<td>32MB</td>
+<td>大规模生产（需连接池）</td>
+</tr>
+</tbody></table>
+<h3 id="7-3-生产环境推荐配置"><a href="#7-3-生产环境推荐配置" class="headerlink" title="7.3 生产环境推荐配置"></a>7.3 生产环境推荐配置</h3><h4 id="postgresql-conf"><a href="#postgresql-conf" class="headerlink" title="postgresql.conf"></a>postgresql.conf</h4><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-comment"># ==================== 连接配置 ====================</span><br><span class="hljs-attr">max_connections</span> = <span class="hljs-number">200</span><br><span class="hljs-attr">superuser_reserved_connections</span> = <span class="hljs-number">3</span><br><span class="hljs-attr">tcp_keepalives_idle</span> = <span class="hljs-number">60</span><br><span class="hljs-attr">tcp_keepalives_interval</span> = <span class="hljs-number">30</span><br><span class="hljs-attr">tcp_keepalives_count</span> = <span class="hljs-number">10</span><br><br><span class="hljs-comment"># ==================== 内存配置 ====================</span><br><span class="hljs-attr">shared_buffers</span> = <span class="hljs-number">4</span>GB<br><span class="hljs-attr">work_mem</span> = <span class="hljs-number">64</span>MB<br><span class="hljs-attr">maintenance_work_mem</span> = <span class="hljs-number">512</span>MB<br><span class="hljs-attr">effective_cache_size</span> = <span class="hljs-number">12</span>GB<br><span class="hljs-attr">temp_buffers</span> = <span class="hljs-number">64</span>MB<br><br><span class="hljs-comment"># ==================== WAL 配置 ====================</span><br><span class="hljs-attr">wal_level</span> = replica<br><span class="hljs-attr">fsync</span> = <span class="hljs-literal">on</span><br><span class="hljs-attr">synchronous_commit</span> = <span class="hljs-literal">on</span><br><span class="hljs-attr">wal_buffers</span> = <span class="hljs-number">64</span>MB<br><span class="hljs-attr">checkpoint_timeout</span> = <span class="hljs-number">15</span>min<br><span class="hljs-attr">checkpoint_completion_target</span> = <span class="hljs-number">0.9</span><br><span class="hljs-attr">max_wal_size</span> = <span class="hljs-number">4</span>GB<br><span class="hljs-attr">min_wal_size</span> = <span class="hljs-number">256</span>MB<br><br><span class="hljs-comment"># ==================== 日志配置 ====================</span><br><span class="hljs-attr">log_destination</span> = <span class="hljs-string">&#x27;csvlog&#x27;</span><br><span class="hljs-attr">logging_collector</span> = <span class="hljs-literal">on</span><br><span class="hljs-attr">log_directory</span> = <span class="hljs-string">&#x27;pg_log&#x27;</span><br><span class="hljs-attr">log_filename</span> = <span class="hljs-string">&#x27;postgresql-%Y%m%d.log&#x27;</span><br><span class="hljs-attr">log_rotation_age</span> = <span class="hljs-number">1</span>d<br><span class="hljs-attr">log_rotation_size</span> = <span class="hljs-number">100</span>MB<br><span class="hljs-attr">log_min_duration_statement</span> = <span class="hljs-number">1000</span>          <span class="hljs-comment"># 慢查询阈值（毫秒）</span><br><span class="hljs-attr">log_checkpoints</span> = <span class="hljs-literal">on</span><br><span class="hljs-attr">log_lock_waits</span> = <span class="hljs-literal">on</span><br><span class="hljs-attr">log_temp_files</span> = <span class="hljs-number">0</span><br><span class="hljs-attr">log_line_prefix</span> = <span class="hljs-string">&#x27;%m [%p] %q%u@%d &#x27;</span>      <span class="hljs-comment"># 日志格式（含时间、进程、用户、数据库）</span><br><br><span class="hljs-comment"># ==================== 查询规划 ====================</span><br><span class="hljs-attr">random_page_cost</span> = <span class="hljs-number">1.1</span><br><span class="hljs-attr">effective_io_concurrency</span> = <span class="hljs-number">200</span><br><span class="hljs-attr">default_statistics_target</span> = <span class="hljs-number">200</span><br><br><span class="hljs-comment"># ==================== 超时配置 ====================</span><br><span class="hljs-attr">idle_session_timeout</span> = <span class="hljs-number">3600000</span><br><span class="hljs-attr">idle_in_transaction_session_timeout</span> = <span class="hljs-number">300000</span><br><span class="hljs-attr">lock_timeout</span> = <span class="hljs-number">10000</span><br><span class="hljs-attr">deadlock_timeout</span> = <span class="hljs-number">1000</span><br><br><span class="hljs-comment"># ==================== 自动清理 ====================</span><br><span class="hljs-attr">autovacuum</span> = <span class="hljs-literal">on</span><br><span class="hljs-attr">autovacuum_max_workers</span> = <span class="hljs-number">3</span><br><span class="hljs-attr">autovacuum_naptime</span> = <span class="hljs-number">1</span>min<br></code></pre></td></tr></table></figure>
+
+<h4 id="pg-hba-conf"><a href="#pg-hba-conf" class="headerlink" title="pg_hba.conf"></a>pg_hba.conf</h4><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-comment"># TYPE  DATABASE        USER            ADDRESS                 METHOD</span><br><br><span class="hljs-comment"># 本地连接</span><br>local   all             all                                     trust<br><br><span class="hljs-comment"># IPv4 本地回环</span><br>host    all             all             127.0.0.1/32            trust<br><br><span class="hljs-comment"># 内部网络</span><br>host    all             all             10.0.0.0/8               scram-sha-256<br>host    all             all             172.16.0.0/12            scram-sha-256<br>host    all             all             192.168.0.0/16           scram-sha-256<br><br><span class="hljs-comment"># 复制连接</span><br>host    replication     all             192.168.1.0/24           scram-sha-256<br></code></pre></td></tr></table></figure>
+
+<h3 id="7-4-配置管理与生效"><a href="#7-4-配置管理与生效" class="headerlink" title="7.4 配置管理与生效"></a>7.4 配置管理与生效</h3><h4 id="7-4-1-配置生效方式"><a href="#7-4-1-配置生效方式" class="headerlink" title="7.4.1 配置生效方式"></a>7.4.1 配置生效方式</h4><h5 id="热加载（无需重启）"><a href="#热加载（无需重启）" class="headerlink" title="热加载（无需重启）"></a>热加载（无需重启）</h5><p>适用于大多数运行时参数：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 在 psql 中执行</span><br><span class="hljs-keyword">SELECT</span> pg_reload_conf();<br></code></pre></td></tr></table></figure>
+
+<p>Docker 环境：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> -it postgres psql -U admin -c <span class="hljs-string">&quot;SELECT pg_reload_conf();&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>支持热加载的参数</strong>（部分）：</p>
+<table>
+<thead>
+<tr>
+<th>参数类型</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>日志参数</td>
+<td><code>log_min_duration_statement</code>, <code>log_lock_waits</code></td>
+</tr>
+<tr>
+<td>连接参数</td>
+<td><code>max_connections</code>, <code>statement_timeout</code></td>
+</tr>
+<tr>
+<td>查询规划</td>
+<td><code>random_page_cost</code>, <code>default_statistics_target</code></td>
+</tr>
+<tr>
+<td>超时参数</td>
+<td><code>idle_session_timeout</code>, <code>lock_timeout</code></td>
+</tr>
+</tbody></table>
+<h5 id="必须重启才能生效的参数"><a href="#必须重启才能生效的参数" class="headerlink" title="必须重启才能生效的参数"></a>必须重启才能生效的参数</h5><p>以下参数修改后必须重启 PostgreSQL 才能生效：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker-compose restart postgres<br></code></pre></td></tr></table></figure>
+
+<p><strong>必须重启的参数</strong>（部分）：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>shared_buffers</code></td>
+<td>共享缓冲区大小</td>
+</tr>
+<tr>
+<td><code>wal_level</code></td>
+<td>WAL 日志级别</td>
+</tr>
+<tr>
+<td><code>port</code></td>
+<td>监听端口</td>
+</tr>
+<tr>
+<td><code>unix_socket_directories</code></td>
+<td>Unix 套接字目录</td>
+</tr>
+<tr>
+<td><code>max_connections</code></td>
+<td>最大连接数（部分情况可热加载）</td>
+</tr>
+</tbody></table>
+<h5 id="挂载配置卷时的重载"><a href="#挂载配置卷时的重载" class="headerlink" title="挂载配置卷时的重载"></a>挂载配置卷时的重载</h5><p>如果将宿主机配置文件挂载进容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 重载配置文件</span><br>docker-compose <span class="hljs-built_in">exec</span> postgres pg_ctl reload -D /var/lib/postgresql/data<br><br><span class="hljs-comment"># 或在容器内执行</span><br>docker <span class="hljs-built_in">exec</span> -it postgres pg_ctl reload -D /var/lib/postgresql/data<br></code></pre></td></tr></table></figure>
+
+<h4 id="7-4-2-验证配置生效"><a href="#7-4-2-验证配置生效" class="headerlink" title="7.4.2 验证配置生效"></a>7.4.2 验证配置生效</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 查看当前配置值</span><br><span class="hljs-keyword">SHOW</span> <span class="hljs-keyword">all</span>;<br><br><span class="hljs-comment">-- 查看指定参数</span><br><span class="hljs-keyword">SHOW</span> max_connections;<br><span class="hljs-keyword">SHOW</span> shared_buffers;<br><span class="hljs-keyword">SHOW</span> work_mem;<br><br><span class="hljs-comment">-- 查看修改过的参数</span><br><span class="hljs-keyword">SELECT</span> name, setting, unit<br><span class="hljs-keyword">FROM</span> pg_settings<br><span class="hljs-keyword">WHERE</span> source <span class="hljs-operator">!=</span> <span class="hljs-string">&#x27;default&#x27;</span>;<br><br><span class="hljs-comment">-- 查看 pg_stat_statements（需要扩展）</span><br><span class="hljs-keyword">CREATE</span> EXTENSION IF <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span> pg_stat_statements;<br><br><span class="hljs-comment">-- 查看建议的 work_mem</span><br><span class="hljs-keyword">SELECT</span> query, (estimated <span class="hljs-operator">*</span> <span class="hljs-number">8</span>) <span class="hljs-operator">/</span> <span class="hljs-number">1024</span> <span class="hljs-keyword">AS</span> estimated_mb<br><span class="hljs-keyword">FROM</span> pg_stat_statements<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> mean_exec_time <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">10</span>;<br></code></pre></td></tr></table></figure>
+
+<h4 id="7-4-3-常见配置修改场景"><a href="#7-4-3-常见配置修改场景" class="headerlink" title="7.4.3 常见配置修改场景"></a>7.4.3 常见配置修改场景</h4><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>修改方式</th>
+<th>生效方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>调整慢查询阈值</td>
+<td><code>ALTER SYSTEM SET log_min_duration_statement = 1000;</code></td>
+<td>热加载</td>
+</tr>
+<tr>
+<td>修改连接数</td>
+<td><code>ALTER SYSTEM SET max_connections = 200;</code></td>
+<td>重启</td>
+</tr>
+<tr>
+<td>开启慢查询日志</td>
+<td>修改 <code>postgresql.conf</code> 并挂载</td>
+<td>重载或重启</td>
+</tr>
+<tr>
+<td>调整内存参数</td>
+<td>修改 <code>postgresql.conf</code> 中的 <code>work_mem</code></td>
+<td>热加载</td>
+</tr>
+<tr>
+<td>修改端口</td>
+<td>修改 <code>postgresql.conf</code> 和 <code>docker-compose.yml</code></td>
+<td>重启</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="A-常用-SQL-参考"><a href="#A-常用-SQL-参考" class="headerlink" title="A. 常用 SQL 参考"></a>A. 常用 SQL 参考</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 查看数据库大小</span><br><span class="hljs-keyword">SELECT</span> pg_database.datname, pg_size_pretty(pg_database_size(pg_database.datname))<br><span class="hljs-keyword">FROM</span> pg_database;<br><br><span class="hljs-comment">-- 查看表大小</span><br><span class="hljs-keyword">SELECT</span> relname, pg_size_pretty(pg_relation_size(relid))<br><span class="hljs-keyword">FROM</span> pg_stat_user_tables<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> pg_relation_size(relid) <span class="hljs-keyword">DESC</span>;<br><br><span class="hljs-comment">-- 查看当前正在执行的查询</span><br><span class="hljs-keyword">SELECT</span> pid, now() <span class="hljs-operator">-</span> query_start <span class="hljs-keyword">AS</span> duration, query<br><span class="hljs-keyword">FROM</span> pg_stat_activity<br><span class="hljs-keyword">WHERE</span> state <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;active&#x27;</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> duration <span class="hljs-keyword">DESC</span>;<br><br><span class="hljs-comment">-- 终止所有连接</span><br><span class="hljs-keyword">SELECT</span> pg_terminate_backend(pid)<br><span class="hljs-keyword">FROM</span> pg_stat_activity<br><span class="hljs-keyword">WHERE</span> datname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;mydb&#x27;</span>;<br><br><span class="hljs-comment">-- 重建所有表和索引</span><br>REINDEX DATABASE mydb;<br>VACUUM <span class="hljs-keyword">FULL</span> ANALYZE;<br></code></pre></td></tr></table></figure>
+
+<h3 id="B-Docker-常用命令"><a href="#B-Docker-常用命令" class="headerlink" title="B. Docker 常用命令"></a>B. Docker 常用命令</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 启动</span><br>docker-compose up -d<br><br><span class="hljs-comment"># 停止</span><br>docker-compose down<br><br><span class="hljs-comment"># 查看日志</span><br>docker-compose logs -f postgres<br><br><span class="hljs-comment"># 进入容器</span><br>docker <span class="hljs-built_in">exec</span> -it postgres bash<br><br><span class="hljs-comment"># 连接数据库</span><br>docker <span class="hljs-built_in">exec</span> -it postgres psql -U admin -d mydb<br><br><span class="hljs-comment"># 执行 SQL 文件</span><br>docker <span class="hljs-built_in">exec</span> -i postgres psql -U admin -d mydb &lt; init.sql<br><br><span class="hljs-comment"># 复制数据</span><br>docker <span class="hljs-built_in">cp</span> backup.dump postgres:/tmp/<br><br><span class="hljs-comment"># 查看资源使用</span><br>docker stats postgres<br><br><span class="hljs-comment"># 重启服务</span><br>docker-compose restart postgres<br><br><span class="hljs-comment"># 重载配置（热加载，无需重启）</span><br>docker <span class="hljs-built_in">exec</span> -it postgres psql -U admin -c <span class="hljs-string">&quot;SELECT pg_reload_conf();&quot;</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<blockquote>
+<p>文档版本：v1.3 | 更新日期：2026-04-10</p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/postgresql/" class="print-no-link">#postgresql</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="print-no-link">#数据库</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>PostgreSQL 运维手册</div>
+      <div>https://501947456.github.io/2026/04/11/PostgreSQL-Operations-Manual/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年4月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/04/11/docker-compose-deploy/" title="Docker Compose 部署 Elasticsearch + Kibana + Filebeat">
+                        <span class="hidden-mobile">Docker Compose 部署 Elasticsearch + Kibana + Filebeat</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', '501947456/501947456.github.io');
+      s.setAttribute('issue-term', 'title');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
